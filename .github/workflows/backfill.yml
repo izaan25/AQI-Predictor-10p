@@ -1,0 +1,39 @@
+name: Historical Backfill — Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      city:
+        description: "City to backfill"
+        required: true
+        default: "karachi"
+      days:
+        description: "Number of days of history"
+        required: true
+        default: "90"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - run: pip install -r requirements.txt
+
+      - name: Run backfill
+        env:
+          AQICN_TOKEN:       ${{ secrets.AQICN_TOKEN }}
+          OW_API_KEY:        ${{ secrets.OW_API_KEY }}
+          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
+          HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
+        run: |
+          python -m feature_pipeline.backfill \
+            --city ${{ github.event.inputs.city }} \
+            --days ${{ github.event.inputs.days }}
