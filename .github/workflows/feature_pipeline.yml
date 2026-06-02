@@ -2,27 +2,37 @@ name: Feature Pipeline — Hourly
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour
-  workflow_dispatch:        # manual trigger
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   feature-pipeline:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
-        with: { python-version: "3.11", cache: pip }
-      - run: pip install -r requirements.txt
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install requests loguru scikit-learn xgboost joblib pandas numpy python-dotenv plotly
+
       - name: Run feature pipeline
         env:
-          AQICN_TOKEN:       ${{ secrets.AQICN_TOKEN }}
-          OW_API_KEY:        ${{ secrets.OW_API_KEY }}
-          HOPSWORKS_API_KEY: ${{ secrets.HOPSWORKS_API_KEY }}
-          HOPSWORKS_PROJECT: ${{ secrets.HOPSWORKS_PROJECT }}
-          TARGET_CITY:       ${{ vars.TARGET_CITY || 'karachi' }}
-          STORAGE_MODE:      hopsworks
+          AQICN_TOKEN:  ${{ secrets.AQICN_TOKEN }}
+          OW_API_KEY:   ${{ secrets.OW_API_KEY }}
+          TARGET_CITY:  ${{ vars.TARGET_CITY || 'karachi' }}
+          STORAGE_MODE: local
         run: python -m feature_pipeline.pipeline
+
       - uses: actions/upload-artifact@v4
         if: failure()
-        with: { name: logs, path: logs/, retention-days: 3 }
+        with:
+          name: logs
+          path: logs/
+          retention-days: 3
