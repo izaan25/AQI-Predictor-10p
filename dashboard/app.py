@@ -1,4 +1,4 @@
-"""dashboard/app.py — Streamlit AQI dashboard."""
+"""dashboard/app.py — Streamlit AQI dashboard (light/dark mode compatible)."""
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -13,12 +13,19 @@ from feature_pipeline.store import pull_latest_features
 
 st.set_page_config(page_title="Pearls AQI Predictor", page_icon="🌬️", layout="wide")
 
+# ── Theme-aware CSS (works on both light and dark mode) ───────
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] { background: #07090f; }
-[data-testid="stSidebar"] { background: #0d1117; }
-h1,h2,h3 { color: #e2e8f0; }
-.stMetric { background: #111827; border-radius: 8px; padding: 8px; }
+/* Remove forced dark background — let Streamlit handle theming */
+.stMetric {
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid rgba(128,128,128,0.2);
+}
+.stMetric label {
+    font-size: 0.8rem !important;
+    opacity: 0.7;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -124,10 +131,14 @@ if not history.empty and "timestamp" in history.columns and "aqi" in history.col
             x=[hist_ts.iloc[-1]] + pred_ts, y=[hist_aqi.iloc[-1]] + pred_aqi,
             mode="lines+markers", name="Forecast",
             line=dict(color="#a78bfa", width=2, dash="dash"), marker=dict(size=6)))
-    fig.update_layout(paper_bgcolor="#07090f", plot_bgcolor="#07090f",
-                      font=dict(color="#e2e8f0"), height=300,
-                      xaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
-                      yaxis=dict(gridcolor="rgba(255,255,255,0.05)", title="AQI"))
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        height=300,
+        xaxis=dict(gridcolor="rgba(128,128,128,0.2)", showgrid=True),
+        yaxis=dict(gridcolor="rgba(128,128,128,0.2)", showgrid=True, title="AQI"),
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
+    )
     st.plotly_chart(fig, use_container_width=True)
 else:
     st.info("No history yet. Run the feature pipeline first.")
@@ -157,10 +168,15 @@ if shap_data:
     fig2 = px.bar(df_shap.head(10), x="importance", y="feature", orientation="h",
                   color="direction",
                   color_discrete_map={"positive":"#fb7185","negative":"#4ade80"})
-    fig2.update_layout(paper_bgcolor="#07090f", plot_bgcolor="#07090f",
-                       font=dict(color="#e2e8f0"), height=320, showlegend=True,
-                       xaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
-                       yaxis=dict(gridcolor="rgba(255,255,255,0.05)"))
+    fig2.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        height=320,
+        showlegend=True,
+        xaxis=dict(gridcolor="rgba(128,128,128,0.2)"),
+        yaxis=dict(gridcolor="rgba(128,128,128,0.2)"),
+        legend=dict(bgcolor="rgba(0,0,0,0)"),
+    )
     st.plotly_chart(fig2, use_container_width=True)
 else:
     st.info("Train models to see SHAP importances.")
