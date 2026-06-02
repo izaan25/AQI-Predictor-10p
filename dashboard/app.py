@@ -15,7 +15,7 @@ st.set_page_config(
     page_title="Pearls AQI Predictor",
     page_icon="🌬️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # ── CSS ───────────────────────────────────────────────────────
@@ -23,8 +23,66 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+/* ── Force dark theme regardless of Streamlit theme setting ── */
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
+    background-color: #0b1120 !important;
+    color: #e2e8f0 !important;
+}
+
+/* Main app container */
+.stApp,
+.stApp > div,
+[data-testid="stAppViewContainer"],
+[data-testid="stAppViewBlockContainer"],
+[data-testid="block-container"],
+.main .block-container {
+    background-color: #0b1120 !important;
+}
+
+/* Top header bar */
+[data-testid="stHeader"] {
+    background-color: #080e1a !important;
+}
+
+/* Streamlit default text elements */
+p, span, label, div, li, a {
+    color: inherit;
+}
+
+/* Override any white/light backgrounds Streamlit injects */
+.stMarkdown, .stText, .element-container {
+    color: #e2e8f0;
+}
+
+/* Info / warning / error boxes — keep readable on dark */
+[data-testid="stAlert"] {
+    background-color: rgba(15,23,42,0.9) !important;
+    border-color: rgba(56,189,248,0.3) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Toggle / checkbox */
+[data-testid="stToggle"] label {
+    color: #94a3b8 !important;
+}
+
+/* Selectbox */
+[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+    background-color: #1e293b !important;
+    border-color: rgba(56,189,248,0.2) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Button */
+[data-testid="stButton"] > button {
+    background-color: #1e293b !important;
+    border: 1px solid rgba(56,189,248,0.25) !important;
+    color: #e2e8f0 !important;
+}
+[data-testid="stButton"] > button:hover {
+    border-color: rgba(56,189,248,0.5) !important;
+    background-color: #253347 !important;
 }
 
 /* Header */
