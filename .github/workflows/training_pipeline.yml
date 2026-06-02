@@ -20,15 +20,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests loguru scikit-learn xgboost joblib pandas numpy python-dotenv plotly
+          pip install scikit-learn xgboost joblib pandas numpy python-dotenv loguru
 
-      - name: Backfill training data
+      - name: Synthetic backfill (no API needed)
         env:
-          AQICN_TOKEN: ${{ secrets.AQICN_TOKEN }}
-          OW_API_KEY:  ${{ secrets.OW_API_KEY }}
           TARGET_CITY: ${{ vars.TARGET_CITY || 'karachi' }}
           STORAGE_MODE: local
-        run: python -m feature_pipeline.backfill --days 365
+        run: python synthetic_backfill.py ${{ vars.TARGET_CITY || 'karachi' }} 365
 
       - name: Train models
         env:
