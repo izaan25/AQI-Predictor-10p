@@ -94,9 +94,12 @@ for day_offset in range(days, 0, -1):
 
 df = pd.DataFrame(rows)
 with sqlite3.connect(str(DB_PATH)) as conn:
-    conn.execute("CREATE TABLE IF NOT EXISTS features (city TEXT)")
-    conn.execute(f"DELETE FROM features WHERE city='{city}'")
-    conn.commit()
+    # Drop existing rows for this city and let pandas recreate the full table
+    try:
+        conn.execute(f"DELETE FROM features WHERE city='{city}'")
+        conn.commit()
+    except:
+        pass
     df.to_sql("features", conn, if_exists="append", index=False)
     conn.commit()
     count = conn.execute("SELECT COUNT(*) FROM features").fetchone()[0]
