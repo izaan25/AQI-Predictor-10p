@@ -508,7 +508,8 @@ if shap_data:
         xaxis=dict(
             gridcolor="rgba(100,116,139,0.15)",
             tickfont=dict(family="Space Mono", size=10, color="#64748b"),
-            title="SHAP Importance", titlefont=dict(color="#64748b")
+            title=dict(text="SHAP Importance", font=dict(color="#64748b")),
+        ),
         ),
         yaxis=dict(
             gridcolor="rgba(100,116,139,0.15)",
