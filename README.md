@@ -194,17 +194,34 @@ Open http://localhost:8000
 
 ---
 
-### Step 11 — Automate with GitHub Actions (optional)
+## Step 11 — GitHub Actions (automated pipeline)
 
-To run the feature pipeline every hour and retrain daily automatically:
+The repo includes two automated workflows that run on GitHub's servers for free.
 
-1. Push the project to a GitHub repo
-2. Go to repo → Settings → Secrets and variables → Actions
+### What they do
+
+| Workflow | Schedule | What it runs |
+|----------|----------|--------------|
+| Training Pipeline — Daily | 2:00 AM UTC every day | Synthetic backfill (8,760 rows) → train all 3 models |
+| Feature Pipeline — Hourly | Every hour | Fetch live AQI + weather → save to DB |
+
+### Setup (one time)
+
+1. Push the project to GitHub
+2. Go to repo → **Settings → Secrets and variables → Actions**
 3. Add these **Secrets**: `AQICN_TOKEN`, `OW_API_KEY`
 4. Add this **Variable**: `TARGET_CITY` = `karachi`
-5. The workflows in `.github/workflows/` will run automatically
 
-GitHub gives 2,000 free minutes/month — well within the free tier.
+### Run manually
+
+Go to **Actions → Training Pipeline — Daily → Run workflow → Run workflow**
+
+### Important notes
+
+- The training workflow uses `synthetic_backfill.py` (in repo root) — no API key needed for backfill, it generates data using math
+- `STORAGE_MODE` must stay as `local` in the workflow files — do not change it to `hopsworks`
+- Trained model artifacts are saved for 30 days under each workflow run and can be downloaded from the Actions tab
+- GitHub gives 2,000 free minutes/month — well within limits for these workflows
 
 ---
 
