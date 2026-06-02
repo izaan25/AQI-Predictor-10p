@@ -22,9 +22,7 @@ HOPSWORKS_PROJ = os.getenv("HOPSWORKS_PROJECT", "pearls-aqi")
 
 # ── Storage mode: "local" (SQLite) or "hopsworks" ───────────────────────────
 STORAGE_MODE = os.getenv("STORAGE_MODE", "local").lower()
-if HOPSWORKS_KEY and STORAGE_MODE == "local":
-    # Auto-upgrade to Hopsworks if key is provided
-    STORAGE_MODE = "hopsworks"
+# Auto-upgrade disabled — always use STORAGE_MODE from environment
 
 # ── Target city ──────────────────────────────────────────────────────────────
 TARGET_CITY = os.getenv("TARGET_CITY", "karachi")
