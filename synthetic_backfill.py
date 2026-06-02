@@ -94,7 +94,8 @@ for day_offset in range(days, 0, -1):
 
 df = pd.DataFrame(rows)
 with sqlite3.connect(str(DB_PATH)) as conn:
-    conn.execute(f"DELETE FROM features WHERE city='{city}'" )
+    conn.execute("CREATE TABLE IF NOT EXISTS features (city TEXT)")
+    conn.execute(f"DELETE FROM features WHERE city='{city}'")
     conn.commit()
     df.to_sql("features", conn, if_exists="append", index=False)
     conn.commit()
