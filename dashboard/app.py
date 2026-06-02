@@ -444,9 +444,9 @@ if not history.empty and "timestamp" in history.columns:
         ),
         yaxis=dict(
             gridcolor="rgba(100,116,139,0.15)",
-            showgrid=True, zeroline=False,
-            title="AQI", titlefont=dict(color="#64748b", size=11),
             tickfont=dict(family="Space Mono", size=10, color="#64748b"),
+            title=dict(text="AQI", font=dict(color="#64748b", size=11)),
+            autorange="reversed"
         ),
         legend=dict(
             bgcolor="rgba(0,0,0,0)",
