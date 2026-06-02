@@ -11,6 +11,19 @@ from config import TARGET_CITY, CITY_COORDS, aqi_category
 from feature_pipeline.fetch import fetch_all
 from feature_pipeline.store import pull_latest_features
 
+# ── Lock Streamlit theme to dark via config.toml ──────────────
+import pathlib, textwrap
+_cfg_dir = pathlib.Path(__file__).parent / ".streamlit"
+_cfg_dir.mkdir(exist_ok=True)
+(_cfg_dir / "config.toml").write_text(textwrap.dedent("""\
+    [theme]
+    base = "dark"
+    backgroundColor = "#0b1120"
+    secondaryBackgroundColor = "#131e30"
+    textColor = "#e2e8f0"
+    primaryColor = "#38bdf8"
+"""))
+
 st.set_page_config(
     page_title="Pearls AQI Predictor",
     page_icon="🌬️",
@@ -23,58 +36,110 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ── Force dark theme regardless of Streamlit theme setting ── */
+/* ══ Force dark theme — overrides Streamlit's light/system CSS vars ══ */
+
+/* 1. Override Streamlit's CSS custom properties at every scope */
+:root,
+[data-theme="light"],
+[data-theme="dark"],
+[data-theme="auto"] {
+    --background-color:         #0b1120 !important;
+    --secondary-background-color: #131e30 !important;
+    --text-color:               #e2e8f0 !important;
+    --font:                     'DM Sans', sans-serif !important;
+    --primary-color:            #38bdf8 !important;
+}
+
 html, body, [class*="css"] {
     font-family: 'DM Sans', sans-serif;
     background-color: #0b1120 !important;
     color: #e2e8f0 !important;
 }
 
-/* Main app container */
+/* 2. Every Streamlit container layer */
 .stApp,
 .stApp > div,
 [data-testid="stAppViewContainer"],
 [data-testid="stAppViewBlockContainer"],
 [data-testid="block-container"],
-.main .block-container {
+.main,
+.main .block-container,
+section[data-testid="stSidebar"] ~ div,
+div[class*="appview"],
+div[class*="main"] {
     background-color: #0b1120 !important;
+    color: #e2e8f0 !important;
 }
 
-/* Top header bar */
-[data-testid="stHeader"] {
+/* 3. Top header bar */
+[data-testid="stHeader"],
+header[data-testid="stHeader"] {
+    background-color: #080e1a !important;
+    border-bottom: 1px solid rgba(56,189,248,0.08) !important;
+}
+
+/* 4. Toolbar (Deploy / ⋮ menu bar) */
+[data-testid="stToolbar"],
+[data-testid="stDecoration"] {
     background-color: #080e1a !important;
 }
 
-/* Streamlit default text elements */
-p, span, label, div, li, a {
-    color: inherit;
+/* 5. Bottom status bar */
+[data-testid="stStatusWidget"] {
+    background-color: #080e1a !important;
+    color: #64748b !important;
 }
 
-/* Override any white/light backgrounds Streamlit injects */
-.stMarkdown, .stText, .element-container {
-    color: #e2e8f0;
+/* 6. Markdown / text containers */
+.stMarkdown, .stText, .element-container,
+p, li {
+    color: #e2e8f0 !important;
 }
 
-/* Info / warning / error boxes — keep readable on dark */
-[data-testid="stAlert"] {
+/* 7. Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #f1f5f9 !important;
+}
+
+/* 8. Horizontal rules */
+hr { border-color: rgba(100,116,139,0.2) !important; }
+
+/* 9. Alert / info boxes */
+[data-testid="stAlert"],
+[data-testid="stNotification"] {
     background-color: rgba(15,23,42,0.9) !important;
     border-color: rgba(56,189,248,0.3) !important;
     color: #e2e8f0 !important;
 }
 
-/* Toggle / checkbox */
-[data-testid="stToggle"] label {
-    color: #94a3b8 !important;
-}
+/* 10. Toggle */
+[data-testid="stToggle"] label { color: #94a3b8 !important; }
 
-/* Selectbox */
+/* 11. Selectbox */
+[data-testid="stSelectbox"] label { color: #64748b !important; }
 [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
     background-color: #1e293b !important;
     border-color: rgba(56,189,248,0.2) !important;
     color: #e2e8f0 !important;
 }
+/* Dropdown list */
+ul[data-testid="stSelectboxVirtualDropdown"],
+[data-baseweb="popover"] ul,
+[data-baseweb="menu"] {
+    background-color: #1e293b !important;
+    border-color: rgba(56,189,248,0.2) !important;
+}
+[data-baseweb="menu"] li,
+[data-baseweb="menu"] [role="option"] {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+}
+[data-baseweb="menu"] li:hover,
+[data-baseweb="menu"] [role="option"]:hover {
+    background-color: #253347 !important;
+}
 
-/* Button */
+/* 12. Button */
 [data-testid="stButton"] > button {
     background-color: #1e293b !important;
     border: 1px solid rgba(56,189,248,0.25) !important;
@@ -83,6 +148,20 @@ p, span, label, div, li, a {
 [data-testid="stButton"] > button:hover {
     border-color: rgba(56,189,248,0.5) !important;
     background-color: #253347 !important;
+}
+
+/* 13. Code / inline code blocks */
+code, pre {
+    background-color: #1e293b !important;
+    color: #7dd3fc !important;
+}
+
+/* 14. st.info / st.warning / st.error native widgets */
+div[data-testid="stInfo"],
+div[data-testid="stWarning"],
+div[data-testid="stError"] {
+    background-color: #131e30 !important;
+    color: #e2e8f0 !important;
 }
 
 /* Header */
