@@ -1,0 +1,63 @@
+{
+  "feature_cols": [
+    "hour",
+    "day_of_week",
+    "day_of_month",
+    "month",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos",
+    "aqi",
+    "pm25",
+    "pm10",
+    "o3",
+    "no2",
+    "so2",
+    "co",
+    "temperature",
+    "humidity",
+    "wind_speed",
+    "pressure",
+    "aqi_lag_1h",
+    "aqi_lag_3h",
+    "aqi_lag_6h",
+    "aqi_lag_12h",
+    "aqi_lag_24h",
+    "pm25_lag_1h",
+    "pm25_lag_6h",
+    "pm25_lag_24h",
+    "aqi_roll_mean_6h",
+    "aqi_roll_mean_12h",
+    "aqi_roll_mean_24h",
+    "aqi_roll_std_6h",
+    "aqi_roll_max_24h",
+    "aqi_change_rate",
+    "aqi_change_pct",
+    "pm25_pm10_ratio",
+    "pollution_load",
+    "humidity_pm25",
+    "wind_aqi_ratio"
+  ],
+  "metrics": {
+    "rf": {
+      "rmse": 6.246,
+      "mae": 5.076,
+      "r2": 0.4569
+    },
+    "ridge": {
+      "rmse": 6.019,
+      "mae": 4.871,
+      "r2": 0.4957
+    },
+    "xgb": {
+      "rmse": 6.422,
+      "mae": 5.186,
+      "r2": 0.4259
+    }
+  },
+  "trained_at": "2026-06-02T16:16:48.288188"
+}
