@@ -416,7 +416,7 @@ def get_history(city):
 with st.sidebar:
     st.markdown("### 🌬️ Pearls AQI")
     st.markdown("---")
-    city = st.selectbox("**Select City**", list(CITY_COORDS.keys()), index=0)
+    city = TARGET_CITY
 
     auto_refresh = st.toggle("Auto-refresh (60s)", value=False)
     if st.button("🔄 Refresh Now", use_container_width=True):
