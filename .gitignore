@@ -1,8 +1,6 @@
 .env
 __pycache__/
 *.pyc
-models/latest/
-data/features.db
 logs/
 .DS_Store
 venv/
