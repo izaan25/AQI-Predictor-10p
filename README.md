@@ -2,6 +2,12 @@
 
 > **100% free to run.** Real AQI data, ML models, 24-hour forecasts, SHAP explanations.
 
+## Live Demo
+https://izaan25-aqi-predictor-10p-dashboardapp-xpb189.streamlit.app/
+
+## GitHub Repository
+https://github.com/izaan25/AQI-Predictor-10p
+
 ---
 
 ## What it does
