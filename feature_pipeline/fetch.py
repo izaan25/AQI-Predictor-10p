@@ -63,43 +63,42 @@ def _parse_aqicn(data: dict, city: str) -> dict:
 
 
 def fetch_openweather(city: str) -> dict:
-    """Fetch weather from OpenWeatherMap (free, uses OW_API_KEY)."""
+    """Fetch weather from Open-Meteo (free, no key, real station data)."""
     coords = CITY_COORDS[city]
-    url = f"{OW_BASE}/weather"
-    params = {
-        "lat":   coords["lat"],
-        "lon":   coords["lon"],
-        "appid": OW_API_KEY,
-        "units": OW_UNITS,   # "metric" → Celsius
-    }
+    url = (
+        f"https://api.open-meteo.com/v1/forecast"
+        f"?latitude={coords['lat']}&longitude={coords['lon']}"
+        f"&current=temperature_2m,relative_humidity_2m,wind_speed_10m,"
+        f"surface_pressure,cloud_cover,visibility,apparent_temperature"
+        f"&wind_speed_unit=ms"
+        f"&timezone=auto"
+    )
 
-    for attempt in range(MAX_RETRIES):
+    for attempt in range(5):  # increased from 3 to 5
         try:
-            resp = requests.get(url, params=params, timeout=15)
+            resp = requests.get(url, timeout=30)  # increased from 15 to 30
             resp.raise_for_status()
             return _parse_openweather(resp.json())
         except Exception as exc:
             wait = BACKOFF_BASE * (2 ** attempt)
-            logger.warning(f"OpenWeather attempt {attempt+1} failed: {exc}. Retry in {wait}s")
-            if attempt < MAX_RETRIES - 1:
-                time.sleep(wait)
+            logger.warning(f"Open-Meteo attempt {attempt+1} failed: {exc}. Retry in {wait}s")
+            time.sleep(wait)
 
-    logger.warning("OpenWeather failed — weather fields will be null")
+    logger.warning("Open-Meteo failed — weather fields will be null")
     return {}
 
 
 def _parse_openweather(data: dict) -> dict:
-    main = data.get("main", {})
-    wind = data.get("wind", {})
+    current = data.get("current", {})
     return {
-        "ow_temp":       main.get("temp"),
-        "ow_feels_like": main.get("feels_like"),
-        "ow_humidity":   main.get("humidity"),
-        "ow_pressure":   main.get("pressure"),
-        "ow_wind_speed": wind.get("speed"),
-        "ow_wind_deg":   wind.get("deg"),
-        "ow_cloudiness": data.get("clouds", {}).get("all"),
-        "ow_visibility": data.get("visibility"),
+        "ow_temp":       current.get("temperature_2m"),
+        "ow_feels_like": current.get("apparent_temperature"),
+        "ow_humidity":   current.get("relative_humidity_2m"),
+        "ow_pressure":   current.get("surface_pressure"),
+        "ow_wind_speed": current.get("wind_speed_10m"),
+        "ow_wind_deg":   None,
+        "ow_cloudiness": current.get("cloud_cover"),
+        "ow_visibility": current.get("visibility"),
     }
 
 def fetch_all(city: str) -> dict:
