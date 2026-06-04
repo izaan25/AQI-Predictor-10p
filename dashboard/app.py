@@ -3,13 +3,15 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from config import TARGET_CITY, CITY_COORDS, aqi_category
 from feature_pipeline.fetch import fetch_all
 from feature_pipeline.store import pull_latest_features
+
+PKT = timezone(timedelta(hours=5))
 
 # ── Lock Streamlit theme to dark via config.toml ──────────────
 import pathlib, textwrap
@@ -427,7 +429,7 @@ with st.sidebar:
     st.markdown(f"Storage: `{STORAGE_MODE}`")
     if STORAGE_MODE == "local":
         st.markdown(f"DB: {'✅ Ready' if DB_PATH.exists() else '⚠️ Missing'}")
-    st.markdown(f"Last update: `{datetime.now().strftime('%H:%M:%S')}`")
+    st.markdown(f"Last update: `{datetime.now(PKT).strftime('%H:%M:%S')}`")
 
     st.markdown("---")
     st.markdown("**🔗 Resources**")
@@ -471,7 +473,7 @@ st.markdown(f"""
         <span class="live-badge"><span class="live-dot"></span>LIVE</span>
       </h1>
       <div class="subtitle">
-        {city.upper()} &nbsp;·&nbsp; {datetime.now().strftime('%A, %d %B %Y  %H:%M')}
+        {city.upper()} &nbsp;·&nbsp; {datetime.now(PKT).strftime('%A, %d %B %Y  %H:%M')}
         &nbsp;·&nbsp; Ensemble ML: RF + XGBoost + Ridge
       </div>
     </div>
